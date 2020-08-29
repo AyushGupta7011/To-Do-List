@@ -3,27 +3,36 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-app.use("view engine", "ejs");
+var items = ["Buy Momos","Eat Momos","Buy More Momos","Eat More Momos"];
+
+app.set("view engine", "ejs");
+
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/", function(req, res) {
     
     var today = new Date();
-    var currentDay = today.getDay();
-    var day = "";
 
-    if(currentDay === 6 || currentDay === 0){
-        day = "Weekend";
-        
-        res.render("List", {KindOfDay: day});
+    var options = {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+    };
 
-    } else {
-        day = "Weekday";
+    var day = today.toLocaleDateString("en-US", options);
 
-        res.render("List", {KindOfDay: day});
-    }
+    res.render("list",{kindofDay: day, newListItem: items});
 
 });
 
+app.post("/",function(req, res){
+    var item = req.body.newItem;
+
+    items.push(item)
+
+    res.redirect("/");
+
+});
 
 
 app.listen(3000, function() {
